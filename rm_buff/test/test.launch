@@ -1,0 +1,7 @@
+<launch>
+    <!-- 加载URDF模型 -->
+    <param name="robot_description" command="$(find xacro)/xacro $(find rm_buff)/urdf/rm_buff.urdf.xacro" />
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find rm_buff)/config/rviz.rviz" />
+    <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" output="screen"/>
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen"/>
+</launch>

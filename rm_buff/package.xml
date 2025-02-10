@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="2">
+    <name>rm_buff</name>
+    <version>0.1.9</version>
+    <description>RoboMaster robot description files</description>
+    <maintainer email="liaoqiayuan@gmail.com">Qiayuan Liao</maintainer>
+    <license>BSD</license>
+    <author email="liaoqiayuan@gmail.com">Qiayuan Liao</author>
+
+    <!-- buildtool_depend: dependencies of the build process -->
+    <buildtool_depend>catkin</buildtool_depend>
+    <depend>xacro</depend>
+    <depend>tf2_ros</depend>
+    <depend>hardware_interface</depend>
+    <depend>controller_manager</depend>
+    <depend>roscpp</depend>
+    <depend>tf2</depend>
+    <depend>std_msgs</depend>
+    <depend>urdf</depend>
+
+</package>
