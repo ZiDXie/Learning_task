@@ -10,8 +10,26 @@
                      izz="${m*r*r/2}"/>
         </inertial>
     </xacro:macro>
+    <xacro:property name="base_radius" value="0.5"/>
+    <xacro:property name="base_height" value="0.02"/>
+    <xacro:property name="base_mass" value="10"/>
+
     <!-- 底座-->
-    <link name="base_link"/>
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <cylinder radius="${base_radius}" length="${base_height}"/>
+            </geometry>
+            <origin xyz="0 0 ${base_height/2}" rpy="0 0 0"/>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder radius="${base_radius}" length="${base_height}"/>
+            </geometry>
+            <origin xyz="0 0 ${base_height/2}" rpy="0 0 0"/>
+        </collision>
+        <xacro:cylinder_inertial_matrix m="${base_mass}" r="${base_radius}" h="${base_height}"/>
+    </link>
 
     <!--立柱-->
     <xacro:property name="pillar_radius" value="0.05"/>
@@ -36,13 +54,14 @@
     <joint name="base_to_pillar" type="fixed">
         <parent link="base_link"/>
         <child link="pillar"/>
-        <origin xyz="0 0 0.5" rpy="0 0 0"/>
+        <origin xyz="0 0 ${pillar_length/2}" rpy="0 0 0"/>
     </joint>
-       <!-- 圆盘参数定义 -->
+
+
+    <!-- 圆盘参数定义 -->
     <xacro:property name="disk_radius" value="0.3"/>
     <xacro:property name="disk_height" value="0.02"/>
     <xacro:property name="disk_mass" value="0.5"/>
-
     <!-- 圆盘link -->
     <link name="disk">
         <visual>
@@ -63,11 +82,11 @@
         <xacro:cylinder_inertial_matrix m="${disk_mass}" r="${disk_radius}" h="${disk_height}"/>
     </link>
 
-    <!-- 立柱到圆盘的固定关节 -->
-    <joint name="pillar_to_disk" type="continuous">
+    <!-- 立柱到圆盘的关节 -->
+    <joint name="rotating_joint" type="continuous">
         <parent link="pillar"/>
         <child link="disk"/>
-        <origin xyz="0.05 0 0.5" rpy="0 0 0"/>
+        <origin xyz="0.07 0 0.5" rpy="0 0 0"/>
         <axis xyz="1 0 0"/>
     </joint>
 
@@ -94,11 +113,27 @@
     </link>
 
     <!-- 关节 -->
-    <joint name="rotating_joint" type="fixed">
+    <joint name="disk2arm" type="fixed">
         <parent link="disk"/>
         <child link="buff_arm"/>
         <origin xyz="0 0 0.5" rpy="0 0 0"/>
     </joint>
     <!-- 传动装置 -->
+    <transmission name="rotating_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="rotating_joint">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="rotating_motor">
+            <mechanicalReduction>1</mechanicalReduction>
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        </actuator>
+    </transmission>
 
+    <!-- gazebo硬件支持 -->
+    <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+            <robotNamespace>/</robotNamespace>
+        </plugin>
+    </gazebo>
 </robot>
