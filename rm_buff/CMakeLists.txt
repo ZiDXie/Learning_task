@@ -1,9 +1,16 @@
 cmake_minimum_required(VERSION 3.10)
 project(rm_buff)
 
+## Use C++14
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_definitions(-Wall -Werror)
+
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED
         COMPONENTS
+        roslint
         roscpp
         std_msgs
         controller_manager
@@ -12,6 +19,7 @@ find_package(catkin REQUIRED
         tf2_ros
         urdf
         xacro
+        pluginlib
 )
 
 ###################################
@@ -24,33 +32,105 @@ find_package(catkin REQUIRED
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
+        INCLUDE_DIRS
+        include
+        LIBRARIES
         CATKIN_DEPENDS
         roscpp
         std_msgs
+        controller_manager
+        hardware_interface
+        tf2
+        tf2_ros
+        urdf
+        xacro
+        pluginlib
+        DEPENDS
+        ## find_package(Eigen3) provides a non standard EIGEN3_INCLUDE_DIR instead of Eigen3_INCLUDE_DIRS.
+        ## Therefore, the DEPEND does not work as expected and we need to add the directory to the INCLUDE_DIRS
+        # Eigen3
+
+        ## Boost is not part of the DEPENDS since it is only used in source files,
+        ## Dependees do not depend on Boost when they depend on this package.
+)
+
+###########
+## Build ##
+###########
+
+## Specify additional locations of header files
+## Your package locations should be listed before other locations
+include_directories(
+        include
+        ${catkin_INCLUDE_DIRS}
+        # Set manually because Eigen sets a non standard INCLUDE DIR
+)
+
+## Declare a cpp library
+add_library(${PROJECT_NAME}
+        src/buff_controller.cpp
+)
+
+
+## Declare cpp executables
+#add_executable(${PROJECT_NAME}
+#        src/buff_controller.cpp
+#
+#)
+
+#target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
+
+## Add dependencies to exported targets, like ROS msgs or srvs
+
+add_dependencies(${PROJECT_NAME}
+        ${catkin_EXPORTED_TARGETS}
+)
+
+## Specify libraries to link executable targets against
+target_link_libraries(${PROJECT_NAME}
+        ${catkin_LIBRARIES}
 )
 
 #############
 ## Install ##
 #############
 
-## Mark executables and/or libraries for installation
+# Mark executables and/or libraries for installation
 #install(
-#    TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_core
-#    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+#        TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_core
+#        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 #)
 #
 ## Mark cpp header files for installation
 #install(
-#    DIRECTORY include/${PROJECT_NAME}/
-#    DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#    FILES_MATCHING PATTERN "*.hpp"
+#        DIRECTORY include/${PROJECT_NAME}/
+#        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+#        FILES_MATCHING PATTERN "*.hpp"
 #)
 #
 ## Mark other files for installation
 #install(
-#    DIRECTORY doc
-#    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+#        DIRECTORY doc
+#        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 #)
-#
+
+#############
+## Testing ##
+#############
+
+#if (${CATKIN_ENABLE_TESTING})
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+#    ## Add gtest based cpp test target and link libraries
+#    catkin_add_gtest(${PROJECT_NAME}-test
+#            test/test_ros_package_template.cpp
+#            test/AlgorithmTest.cpp)
+#    target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME}_core)
+#endif ()
+
+##########################
+## Static code analysis ##
+##########################
+
+roslint_cpp()

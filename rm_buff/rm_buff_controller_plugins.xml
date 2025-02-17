@@ -1,0 +1,9 @@
+<library path="lib/librm_buff">
+    <class name="rm_buff/BuffController"
+           type="rm_buff::BuffController"
+           base_class_type="controller_interface::ControllerBase">
+        <description>
+            A controller for implementing sinusoidal velocity trajectory for buff mechanism
+        </description>
+    </class>
+</library>

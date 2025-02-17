@@ -1,0 +1,14 @@
+controllers:
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50
+
+  buff_controller:
+    type: rm_buff/BuffController
+    usefeedforward: true
+    pid:
+      p: 0.1
+      i: 0.0
+      d: 0.0
+    feedforward:
+      kf: 0.1

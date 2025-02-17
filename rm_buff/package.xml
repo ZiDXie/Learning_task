@@ -17,5 +17,10 @@
     <depend>tf2</depend>
     <depend>std_msgs</depend>
     <depend>urdf</depend>
+    <depend>roslint</depend>
+    <depend>pluginlib</depend>
 
+    <export>
+        <controller_interface plugin="${prefix}/rm_buff_controller_plugins.xml"/>
+    </export>
 </package>
