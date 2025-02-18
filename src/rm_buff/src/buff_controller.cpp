@@ -35,11 +35,18 @@ double BuffController::calculate_spd(const ros::Time& time)
 
 void BuffController::stop(const ros::Time& time, const ros::Duration& period)
 {
-  joint_.setCommand(0);
+  double target_vel = 0;
+  double current_vel = joint_.getVelocity();
+
+  double error = target_vel - current_vel;
+  double effort = pid_.computeCommand(error, period);
+  joint_.setCommand(effort);
 }
 
 void BuffController::start(const ros::Time& time, const ros::Duration& period)
 {
+  reset();
+
   double target_vel = calculate_spd(time);
   double current_vel = joint_.getVelocity();
 
@@ -79,16 +86,19 @@ bool BuffController::init(hardware_interface::EffortJointInterface* effort_joint
 
 void BuffController::update(const ros::Time& time, const ros::Duration& period)
 {
-  switch (mode)
+  if (mode == STOP)
   {
-    case STOP:
-      stop(time, period);
-      break;
-    case START:
-      start(time, period);
-      break;
-    default:
-      break;
+    stop(time, period);
+    return;
+  }
+  else if (mode == START)
+  {
+    start(time, period);
+  }
+  else
+  {
+    mode = STOP;
+    stop(time, period);
   }
 }
 }  // namespace rm_buff
