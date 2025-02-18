@@ -1,0 +1,11 @@
+rm_hw:
+  bus:
+    - can0
+  loop_frequency: 1000
+  cycle_time_error_threshold: 0.001
+  actuators:
+    rotation_motor:
+      bus: can0
+      id: 0x201
+      type: rm_3508
+      lp_cutoff_frequency: 100
