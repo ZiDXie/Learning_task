@@ -11,6 +11,9 @@ add_definitions(-Wall -Werror)
 find_package(catkin REQUIRED
         COMPONENTS
         roscpp
+        rospy
+        std_msgs
+        dynamic_reconfigure
         controller_interface
         hardware_interface
         pluginlib
@@ -29,6 +32,10 @@ find_package(catkin REQUIRED
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
+generate_dynamic_reconfigure_options(
+        cfg/buff.cfg
+)
+
 catkin_package(
         INCLUDE_DIRS
         include
@@ -41,6 +48,9 @@ catkin_package(
         control_toolbox
         urdf
         xacro
+        rospy
+        std_msgs
+        dynamic_reconfigure
         DEPENDS
         ## find_package(Eigen3) provides a non standard EIGEN3_INCLUDE_DIR instead of Eigen3_INCLUDE_DIRS.
         ## Therefore, the DEPEND does not work as expected and we need to add the directory to the INCLUDE_DIRS

@@ -3,6 +3,16 @@
 
 namespace rm_buff
 {
+void BuffController::pid_cb(buffConfig& config, uint32_t level)
+{
+  pid_.setGains(config.p, config.i, config.d, config.max, config.min);
+  mode = config.mode;
+  kf = config.kf;
+  ROS_INFO("mode: %d", mode);
+  ROS_INFO("p: %f, i: %f, d: %f, max: %f, min: %f", config.p, config.i, config.d, config.max, config.min);
+  ROS_INFO("kf: %f", kf);
+}
+
 void BuffController::reset()
 {
   std::random_device rd;
@@ -35,6 +45,10 @@ bool BuffController::init(hardware_interface::EffortJointInterface* effort_joint
       return false;
     }
   }
+
+  server_ = std::make_shared<dynamic_reconfigure::Server<rm_buff::buffConfig> >(controller_nh);
+  server_->setCallback(
+      [this](auto&& PH1, auto&& PH2) { pid_cb(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2)); });
 
   reset();
   pid_.reset();
