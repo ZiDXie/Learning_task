@@ -10,16 +10,14 @@ add_definitions(-Wall -Werror)
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED
         COMPONENTS
-        roslint
         roscpp
-        std_msgs
-        controller_manager
+        controller_interface
         hardware_interface
-        tf2
-        tf2_ros
+        pluginlib
+        control_toolbox
         urdf
         xacro
-        pluginlib
+        gazebo_ros_control
 )
 
 ###################################
@@ -37,14 +35,12 @@ catkin_package(
         LIBRARIES
         CATKIN_DEPENDS
         roscpp
-        std_msgs
-        controller_manager
+        controller_interface
         hardware_interface
-        tf2
-        tf2_ros
+        pluginlib
+        control_toolbox
         urdf
         xacro
-        pluginlib
         DEPENDS
         ## find_package(Eigen3) provides a non standard EIGEN3_INCLUDE_DIR instead of Eigen3_INCLUDE_DIRS.
         ## Therefore, the DEPEND does not work as expected and we need to add the directory to the INCLUDE_DIRS
@@ -132,5 +128,3 @@ target_link_libraries(${PROJECT_NAME}
 ##########################
 ## Static code analysis ##
 ##########################
-
-roslint_cpp()

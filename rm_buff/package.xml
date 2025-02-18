@@ -9,16 +9,15 @@
 
     <!-- buildtool_depend: dependencies of the build process -->
     <buildtool_depend>catkin</buildtool_depend>
-    <depend>xacro</depend>
-    <depend>tf2_ros</depend>
-    <depend>hardware_interface</depend>
-    <depend>controller_manager</depend>
     <depend>roscpp</depend>
-    <depend>tf2</depend>
-    <depend>std_msgs</depend>
-    <depend>urdf</depend>
-    <depend>roslint</depend>
+    <depend>controller_interface</depend>
+    <depend>hardware_interface</depend>
     <depend>pluginlib</depend>
+    <depend>control_toolbox</depend>
+    <depend>urdf</depend>
+    <depend>xacro</depend>
+    <depend>gazebo_ros_control</depend>
+
 
     <export>
         <controller_interface plugin="${prefix}/rm_buff_controller_plugins.xml"/>
