@@ -12,7 +12,7 @@
     </xacro:macro>
     <xacro:property name="base_radius" value="0.5"/>
     <xacro:property name="base_height" value="0.02"/>
-    <xacro:property name="base_mass" value="10"/>
+    <xacro:property name="base_mass" value="100"/>
 
     <!-- 底座-->
     <link name="base_link">
@@ -111,6 +111,9 @@
         <!-- 圆柱体的惯性矩阵 -->
         <xacro:cylinder_inertial_matrix m="${arm_m}" r="${arm_radius}" h="${arm_length}"/>
     </link>
+    <gazebo reference="buff_arm">
+        <gravity>false</gravity>
+    </gazebo>
 
     <!-- 关节 -->
     <joint name="disk2arm" type="fixed">
