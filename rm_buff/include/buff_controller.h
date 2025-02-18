@@ -1,9 +1,13 @@
+#ifndef BUFF_CONTROLLER_H
+#define BUFF_CONTROLLER_H
+
 #pragma once
 
 #include "ros/ros.h"
 #include "control_toolbox/pid.h"
 #include "controller_interface/controller.h"
 #include "hardware_interface/joint_command_interface.h"
+#include "random"
 
 namespace rm_buff
 {
@@ -33,9 +37,11 @@ private:
   double b_;
   double w_;
 
-  double a_min = 0.780;
-  double a_max = 1.045;
-  double w_min = 1.884;
-  double w_max = 2.000;
+  const double a_min = 0.780;
+  const double a_max = 1.045;
+  const double w_min = 1.884;
+  const double w_max = 2.000;
 };
 }  // namespace rm_buff
+
+#endif  // BUFF_CONTROLLER_H

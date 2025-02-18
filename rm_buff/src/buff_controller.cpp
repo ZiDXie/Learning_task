@@ -1,5 +1,4 @@
 #include "buff_controller.h"
-#include <bits/random.h>
 #include "pluginlib/class_list_macros.h"
 
 namespace rm_buff
@@ -8,13 +7,10 @@ void BuffController::reset()
 {
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_real_distribution<double> dis(a_min, a_max);
-  a_ = dis(gen);
-
-  std::random_device rd2;
-  std::mt19937 gen2(rd2());
-  std::uniform_real_distribution<double> dis2(w_min, w_max);
-  w_ = dis2(gen2);
+  std::uniform_real_distribution<double> dis_a(a_min, a_max);
+  std::uniform_real_distribution<double> dis_w(w_min, w_max);
+  a_ = dis_a(gen);
+  w_ = dis_w(gen);
 
   b_ = 2.090 - a_;
 
@@ -31,10 +27,13 @@ bool BuffController::init(hardware_interface::EffortJointInterface* effort_joint
                           ros::NodeHandle& controller_nh)
 {
   joint_ = effort_joint_interface->getHandle("rotating_joint");
-  if (!pid_.init(ros::NodeHandle(controller_nh, "pid")))
+  if (controller_nh.hasParam("pid"))
   {
-    ROS_ERROR("Failed to init pid");
-    return false;
+    if (!pid_.init(ros::NodeHandle(controller_nh, "pid")))
+    {
+      ROS_ERROR("Failed to init pid");
+      return false;
+    }
   }
 
   reset();
