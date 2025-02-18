@@ -7,6 +7,7 @@ controllers:
     type: rm_buff/BuffController
     joint: "rotating_joint"
     usefeedforward: true
+    usedynamic: true
     pid: { p: 1, i: 0, d: 0.0, i_max: 0.0, i_min: 0.0, antiwindup: true, publish_state: true }
     feedforward:
       kf: 0.1

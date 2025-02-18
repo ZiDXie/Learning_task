@@ -33,6 +33,22 @@ double BuffController::calculate_spd(const ros::Time& time)
   return a_ * sin(w_ * t) + b_;
 }
 
+void BuffController::stop(const ros::Time& time, const ros::Duration& period)
+{
+  joint_.setCommand(0);
+}
+
+void BuffController::start(const ros::Time& time, const ros::Duration& period)
+{
+  double target_vel = calculate_spd(time);
+  double current_vel = joint_.getVelocity();
+
+  double error = target_vel - current_vel;
+  double effort = pid_.computeCommand(error, period);
+
+  joint_.setCommand(effort);
+}
+
 bool BuffController::init(hardware_interface::EffortJointInterface* effort_joint_interface, ros::NodeHandle& root_nh,
                           ros::NodeHandle& controller_nh)
 {
@@ -45,10 +61,15 @@ bool BuffController::init(hardware_interface::EffortJointInterface* effort_joint
       return false;
     }
   }
+  if (controller_nh.param<bool>("usedynamic", use_dynamcic, true))
+  {
+    server_ = std::make_shared<dynamic_reconfigure::Server<rm_buff::buffConfig> >(controller_nh);
+    server_->setCallback(
+        [this](auto&& PH1, auto&& PH2) { pid_cb(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2)); });
+    ROS_INFO("Dynamic reconfigure server initialized");
+  }
 
-  server_ = std::make_shared<dynamic_reconfigure::Server<rm_buff::buffConfig> >(controller_nh);
-  server_->setCallback(
-      [this](auto&& PH1, auto&& PH2) { pid_cb(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2)); });
+  controller_nh.param<bool>("usefeedforward", use_feedforward, false);
 
   reset();
   pid_.reset();
@@ -58,13 +79,17 @@ bool BuffController::init(hardware_interface::EffortJointInterface* effort_joint
 
 void BuffController::update(const ros::Time& time, const ros::Duration& period)
 {
-  double target_vel = calculate_spd(time);
-  double current_vel = joint_.getVelocity();
-
-  double error = target_vel - current_vel;
-  double effort = pid_.computeCommand(error, period);
-
-  joint_.setCommand(effort);
+  switch (mode)
+  {
+    case STOP:
+      stop(time, period);
+      break;
+    case START:
+      start(time, period);
+      break;
+    default:
+      break;
+  }
 }
 }  // namespace rm_buff
 

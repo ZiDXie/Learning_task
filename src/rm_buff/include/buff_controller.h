@@ -35,7 +35,7 @@ private:
 
   // 动态参数服务器
   std::shared_ptr<dynamic_reconfigure::Server<rm_buff::buffConfig> > server_;
-  dynamic_reconfigure::Server<rm_buff::buffConfig>::CallbackType cb_type;
+  bool use_dynamcic;
 
   void pid_cb(rm_buff::buffConfig& config, uint32_t level);
 
@@ -46,8 +46,13 @@ private:
     START
   };
 
+  void stop(const ros::Time& time, const ros::Duration& period);
+
+  void start(const ros::Time& time, const ros::Duration& period);
+
   int mode = STOP;
 
+  bool use_feedforward;
   double kf;
 
   ros::Time start_t_;
