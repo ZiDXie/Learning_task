@@ -1,7 +1,11 @@
 <launch>
+    <param name="robot_description" command="$(find xacro)/xacro $(find rm_buff)/urdf/rm_buff.urdf.xacro"/>
+
     <rosparam file="$(find rm_config)/config/rm_control/rm_hw/actuator_coefficient.yaml" command="load" ns="rm_hw"/>
     <rosparam file="$(find hw)/config/buff.yaml" command="load"/>
 
     <node name="rm_hw" pkg="rm_hw" type="rm_hw" respawn="false"
           clear_params="true"/>
+
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen"/>
 </launch>
