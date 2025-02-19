@@ -11,6 +11,7 @@ void BuffController::pid_cb(buffConfig& config, uint32_t level)
   pid_.setGains(config.p, config.i, config.d, config.max, config.min);
   mode = config.mode;
   kf = config.kf;
+  use_feedforward = config.use_feedforward;
   ROS_INFO("mode: %d", mode);
   ROS_INFO("p: %f, i: %f, d: %f, max: %f, min: %f", config.p, config.i, config.d, config.max, config.min);
   ROS_INFO("kf: %f", kf);

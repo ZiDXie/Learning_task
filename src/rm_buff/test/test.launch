@@ -1,12 +1,8 @@
 <launch>
-    <!-- 加载URDF模型 -->
-    <param name="robot_description" command="$(find xacro)/xacro $(find rm_buff)/urdf/rm_buff.urdf.xacro"/>
+
+    <include file="$(find hw)/launch/buff.launch"/>
 
     <rosparam file="$(find rm_buff)/config/controllers.yaml" command="load"/>
-
-    <include file="$(find gazebo_ros)/launch/empty_world.launch"/>
-    <!-- 在 gazebo 中显示机器人模型 -->
-    <node pkg="gazebo_ros" type="spawn_model" name="model" args="-urdf -model buff -param robot_description"/>
 
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
           output="screen" args="
@@ -16,5 +12,4 @@
 
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(find rm_buff)/config/rviz.rviz"/>
 
-    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen"/>
 </launch>
