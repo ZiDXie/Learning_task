@@ -43,15 +43,15 @@ private:
   enum
   {
     STOP,
-    START
+    BIG,
+    SMALL
   };
 
-  void stop(const ros::Time& time, const ros::Duration& period);
-
-  void start(const ros::Time& time, const ros::Duration& period);
+  void move(const ros::Time& time, const ros::Duration& period);
 
   int mode = STOP;
 
+  double target_vel;
   bool use_feedforward;
   double kf;
 

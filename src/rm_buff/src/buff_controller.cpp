@@ -33,26 +33,14 @@ double BuffController::calculate_spd(const ros::Time& time)
   return a_ * sin(w_ * t) + b_;
 }
 
-void BuffController::stop(const ros::Time& time, const ros::Duration& period)
+void BuffController::move(const ros::Time& time, const ros::Duration& period)
 {
-  double target_vel = 0;
-  double current_vel = joint_.getVelocity();
+  if (mode == BIG)
+    reset();
 
+  double current_vel = joint_.getVelocity();
   double error = target_vel - current_vel;
   double effort = pid_.computeCommand(error, period);
-  joint_.setCommand(effort);
-}
-
-void BuffController::start(const ros::Time& time, const ros::Duration& period)
-{
-  reset();
-
-  double target_vel = calculate_spd(time);
-  double current_vel = joint_.getVelocity();
-
-  double error = target_vel - current_vel;
-  double effort = pid_.computeCommand(error, period);
-
   joint_.setCommand(effort);
 }
 
@@ -88,18 +76,21 @@ void BuffController::update(const ros::Time& time, const ros::Duration& period)
 {
   if (mode == STOP)
   {
-    stop(time, period);
-    return;
+    target_vel = 0;
   }
-  else if (mode == START)
+  else if (mode == BIG)
   {
-    start(time, period);
+    target_vel = calculate_spd(time);
+  }
+  else if (mode == SMALL)
+  {
+    target_vel = 10;
   }
   else
   {
     mode = STOP;
-    stop(time, period);
   }
+  move(time, period);
 }
 }  // namespace rm_buff
 
