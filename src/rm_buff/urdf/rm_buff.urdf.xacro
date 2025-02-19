@@ -111,6 +111,9 @@
         <!-- 圆柱体的惯性矩阵 -->
         <xacro:cylinder_inertial_matrix m="${arm_m}" r="${arm_radius}" h="${arm_length}"/>
     </link>
+    <gazebo reference="disk">
+        <gravity>false</gravity>
+    </gazebo>
     <gazebo reference="buff_arm">
         <gravity>false</gravity>
     </gazebo>
@@ -128,8 +131,8 @@
             <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </joint>
         <actuator name="rotating_motor">
-            <mechanicalReduction>1</mechanicalReduction>
             <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
         </actuator>
     </transmission>
 

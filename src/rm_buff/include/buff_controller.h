@@ -10,6 +10,8 @@
 #include "random"
 #include "rm_buff/buffConfig.h"
 #include "dynamic_reconfigure/server.h"
+#include "std_msgs/Float64.h"
+#include "cmath"
 
 namespace rm_buff
 {
@@ -36,7 +38,6 @@ private:
   // 动态参数服务器
   std::shared_ptr<dynamic_reconfigure::Server<rm_buff::buffConfig> > server_;
   bool use_dynamcic;
-
   void pid_cb(rm_buff::buffConfig& config, uint32_t level);
 
   // 参数
@@ -48,12 +49,15 @@ private:
   };
 
   void move(const ros::Time& time, const ros::Duration& period);
-
   int mode = STOP;
-
+  int last_mode = STOP;
   double target_vel;
   bool use_feedforward;
   double kf;
+
+  ros::Publisher target_vel_pub;
+
+  void target_vel_pub_();
 
   ros::Time start_t_;
   double a_;

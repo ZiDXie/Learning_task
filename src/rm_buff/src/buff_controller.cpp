@@ -1,4 +1,7 @@
 #include "buff_controller.h"
+
+#include <std_msgs/Float64.h>
+
 #include "pluginlib/class_list_macros.h"
 
 namespace rm_buff
@@ -35,13 +38,43 @@ double BuffController::calculate_spd(const ros::Time& time)
 
 void BuffController::move(const ros::Time& time, const ros::Duration& period)
 {
-  if (mode == BIG)
+  if (mode == BIG && last_mode != BIG)
+  {
     reset();
+  }
+  last_mode = mode;
 
+  if (mode == STOP)
+  {
+    target_vel = 0;
+  }
+  else if (mode == BIG)
+  {
+    target_vel = calculate_spd(time);
+  }
+  else if (mode == SMALL)
+  {
+    target_vel = M_PI / 3;
+  }
+  else
+  {
+    mode = STOP;
+  }
   double current_vel = joint_.getVelocity();
   double error = target_vel - current_vel;
   double effort = pid_.computeCommand(error, period);
+  if (use_feedforward)
+  {
+    effort += kf * target_vel;
+  }
   joint_.setCommand(effort);
+}
+
+void BuffController::target_vel_pub_()
+{
+  std_msgs::Float64 target_vel_msg;
+  target_vel_msg.data = target_vel;
+  target_vel_pub.publish(target_vel_msg);
 }
 
 bool BuffController::init(hardware_interface::EffortJointInterface* effort_joint_interface, ros::NodeHandle& root_nh,
@@ -66,6 +99,8 @@ bool BuffController::init(hardware_interface::EffortJointInterface* effort_joint
 
   controller_nh.param<bool>("usefeedforward", use_feedforward, false);
 
+  target_vel_pub = controller_nh.advertise<std_msgs::Float64>("target_vel", 1);
+
   reset();
   pid_.reset();
 
@@ -74,23 +109,8 @@ bool BuffController::init(hardware_interface::EffortJointInterface* effort_joint
 
 void BuffController::update(const ros::Time& time, const ros::Duration& period)
 {
-  if (mode == STOP)
-  {
-    target_vel = 0;
-  }
-  else if (mode == BIG)
-  {
-    target_vel = calculate_spd(time);
-  }
-  else if (mode == SMALL)
-  {
-    target_vel = 10;
-  }
-  else
-  {
-    mode = STOP;
-  }
   move(time, period);
+  target_vel_pub_();
 }
 }  // namespace rm_buff
 
